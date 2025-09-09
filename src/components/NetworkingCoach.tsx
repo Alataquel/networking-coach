@@ -13,9 +13,6 @@ interface MessageData {
   recipientName: string;
   recipientTitle: string;
   company: string;
-  studentName: string;
-  university: string;
-  major: string;
   purpose: string;
   messageType: MessageType;
 }
@@ -26,28 +23,28 @@ const messageTemplates = {
     icon: Users,
     description: "Professional connection request for LinkedIn",
     template: (data: MessageData) => 
-      `Hi ${data.recipientName},\n\nI'm ${data.studentName}, a ${data.major} student at ${data.university}. I came across your profile and was impressed by your work at ${data.company}. ${data.purpose}\n\nI'd love to connect and learn from your experience in the field.\n\nBest regards,\n${data.studentName}`
+      `Hi ${data.recipientName},\n\nI'm a student and came across your profile. I was impressed by your work at ${data.company}. ${data.purpose}\n\nI'd love to connect and learn from your experience in the field.\n\nBest regards`
   },
   informational: {
     title: "Informational Interview Request",
     icon: MessageCircle,
     description: "Request a brief informational interview",
     template: (data: MessageData) => 
-      `Subject: Informational Interview Request - ${data.major} Student at ${data.university}\n\nDear ${data.recipientName},\n\nI hope this email finds you well. My name is ${data.studentName}, and I'm a ${data.major} student at ${data.university}. I discovered your profile through LinkedIn and was impressed by your career journey at ${data.company}.\n\n${data.purpose}\n\nI would be incredibly grateful for 15-20 minutes of your time to learn about your experience and gain insights into the industry. I'm particularly interested in understanding:\n\n• Your career path and key decisions\n• Advice for someone entering the field\n• Current trends and challenges in the industry\n\nI'm flexible with timing and happy to work around your schedule. Would a brief phone call or video chat be possible in the coming weeks?\n\nThank you for considering my request. I understand you have a busy schedule and truly appreciate any time you can spare.\n\nBest regards,\n${data.studentName}\n${data.university}\n[Your Phone Number]\n[Your Email]`
+      `Subject: Informational Interview Request\n\nDear ${data.recipientName},\n\nI hope this email finds you well. I'm a student and discovered your profile through LinkedIn. I was impressed by your career journey at ${data.company}.\n\n${data.purpose}\n\nI would be incredibly grateful for 15-20 minutes of your time to learn about your experience and gain insights into the industry. I'm particularly interested in understanding:\n\n• Your career path and key decisions\n• Advice for someone entering the field\n• Current trends and challenges in the industry\n\nI'm flexible with timing and happy to work around your schedule. Would a brief phone call or video chat be possible in the coming weeks?\n\nThank you for considering my request. I understand you have a busy schedule and truly appreciate any time you can spare.\n\nBest regards`
   },
   "recruiter-followup": {
     title: "Recruiter Follow-up",
     icon: Mail,
     description: "Follow up after meeting with a recruiter",
     template: (data: MessageData) => 
-      `Subject: Following up on our conversation - ${data.studentName}\n\nHi ${data.recipientName},\n\nThank you for taking the time to speak with me about opportunities at ${data.company}. ${data.purpose}\n\nI wanted to follow up and reiterate my strong interest in joining your team. Based on our conversation, I'm even more excited about the possibility of contributing to ${data.company}'s mission.\n\nI've attached my updated resume and would be happy to provide any additional information you might need. Please let me know if there are any next steps I should be aware of.\n\nI look forward to hearing from you.\n\nBest regards,\n${data.studentName}\n${data.university}\n[Your Phone Number]\n[Your Email]`
+      `Subject: Following up on our conversation\n\nHi ${data.recipientName},\n\nThank you for taking the time to speak with me about opportunities at ${data.company}. ${data.purpose}\n\nI wanted to follow up and reiterate my strong interest in joining your team. Based on our conversation, I'm even more excited about the possibility of contributing to ${data.company}'s mission.\n\nI've attached my updated resume and would be happy to provide any additional information you might need. Please let me know if there are any next steps I should be aware of.\n\nI look forward to hearing from you.\n\nBest regards`
   },
   "mentor-request": {
     title: "Mentorship Request",
     icon: Users,
     description: "Request ongoing mentorship relationship",
     template: (data: MessageData) => 
-      `Subject: Mentorship Opportunity - ${data.major} Student at ${data.university}\n\nDear ${data.recipientName},\n\nI hope you're doing well. My name is ${data.studentName}, and I'm a ${data.major} student at ${data.university}. I came across your profile and was inspired by your career achievements at ${data.company}.\n\n${data.purpose}\n\nI'm writing to inquire about the possibility of a mentoring relationship. I'm passionate about growing in this field and would greatly value guidance from someone with your experience and expertise.\n\nI understand that mentoring is a significant commitment, and I want to assure you that I would:\n\n• Come prepared to our conversations with specific questions\n• Respect your time and schedule\n• Take action on the advice you provide\n• Keep you updated on my progress\n\nWould you be open to a brief conversation to discuss this possibility? I'm happy to accommodate your schedule and preferred communication method.\n\nThank you for considering this request.\n\nRespectfully,\n${data.studentName}\n${data.university}\n[Your Phone Number]\n[Your Email]`
+      `Subject: Mentorship Opportunity\n\nDear ${data.recipientName},\n\nI hope you're doing well. I'm a student and came across your profile. I was inspired by your career achievements at ${data.company}.\n\n${data.purpose}\n\nI'm writing to inquire about the possibility of a mentoring relationship. I'm passionate about growing in this field and would greatly value guidance from someone with your experience and expertise.\n\nI understand that mentoring is a significant commitment, and I want to assure you that I would:\n\n• Come prepared to our conversations with specific questions\n• Respect your time and schedule\n• Take action on the advice you provide\n• Keep you updated on my progress\n\nWould you be open to a brief conversation to discuss this possibility? I'm happy to accommodate your schedule and preferred communication method.\n\nThank you for considering this request.\n\nRespectfully`
   }
 };
 
@@ -67,9 +64,6 @@ export default function NetworkingCoach() {
     recipientName: "",
     recipientTitle: "",
     company: "",
-    studentName: "",
-    university: "",
-    major: "",
     purpose: "",
     messageType: "linkedin"
   });
@@ -96,8 +90,7 @@ export default function NetworkingCoach() {
     });
   };
 
-  const isFormValid = messageData.recipientName && messageData.studentName && messageData.company;
-
+  const isFormValid = messageData.recipientName && messageData.company;
   const currentTemplate = messageTemplates[messageData.messageType];
 
   return (
@@ -170,7 +163,7 @@ export default function NetworkingCoach() {
                   <Button
                     key={key}
                     variant={isSelected ? "default" : "outline"}
-                    className={`w-full justify-start gap-3 h-auto py-4 px-4 text-left transition-all ${
+                    className={`w-full p-4 h-auto transition-all text-left ${
                       isSelected
                         ? 'bg-primary text-primary-foreground shadow-professional border-primary' 
                         : 'hover:bg-trust hover:text-trust-foreground hover:border-accent border-border'
@@ -180,12 +173,12 @@ export default function NetworkingCoach() {
                       setActiveStep(Math.max(activeStep, 1));
                     }}
                   >
-                    <div className="flex flex-col items-start gap-1">
-                      <div className="flex items-center gap-2">
-                        <TemplateIcon className="h-4 w-4" />
-                        <span className="font-medium">{template.title}</span>
+                    <div className="flex flex-col w-full">
+                      <div className="flex items-center gap-2 mb-1">
+                        <TemplateIcon className="h-4 w-4 flex-shrink-0" />
+                        <span className="font-medium text-sm leading-tight">{template.title}</span>
                       </div>
-                      <span className="text-xs opacity-80">{template.description}</span>
+                      <span className="text-xs opacity-80 text-left">{template.description}</span>
                     </div>
                   </Button>
                 );
@@ -238,40 +231,6 @@ export default function NetworkingCoach() {
                   value={messageData.company}
                   onChange={(e) => setMessageData(prev => ({...prev, company: e.target.value}))}
                   placeholder="e.g., Microsoft"
-                  className="h-11"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="studentName" className="text-sm font-medium">Your Name *</Label>
-                  <Input
-                    id="studentName"
-                    value={messageData.studentName}
-                    onChange={(e) => setMessageData(prev => ({...prev, studentName: e.target.value}))}
-                    placeholder="e.g., Alex Chen"
-                    className="h-11"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="university" className="text-sm font-medium">Your University</Label>
-                  <Input
-                    id="university"
-                    value={messageData.university}
-                    onChange={(e) => setMessageData(prev => ({...prev, university: e.target.value}))}
-                    placeholder="e.g., Stanford University"
-                    className="h-11"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="major" className="text-sm font-medium">Your Major/Field</Label>
-                <Input
-                  id="major"
-                  value={messageData.major}
-                  onChange={(e) => setMessageData(prev => ({...prev, major: e.target.value}))}
-                  placeholder="e.g., Computer Science"
                   className="h-11"
                 />
               </div>
