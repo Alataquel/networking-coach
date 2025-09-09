@@ -86,22 +86,59 @@ export default function NetworkingCoach() {
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header Section with Background */}
       <div className="bg-primary text-primary-foreground py-20 px-4">
-        <div className="max-w-7xl mx-auto text-center space-y-6">
+        <div className="max-w-7xl mx-auto text-center space-y-8">
           <h1 className="text-5xl font-bold">
-            Networking{" "}
+            Master Your Next{" "}
             <span 
-              className="bg-gradient-coach bg-clip-text text-transparent font-extrabold"
+              className="bg-gradient-coach bg-clip-text text-transparent font-extrabold opacity-70"
               style={{
                 backgroundImage: 'var(--gradient-coach)'
               }}
             >
-              coach
+              Networking
             </span>
           </h1>
           <p className="text-xl max-w-3xl mx-auto leading-relaxed opacity-90">
             Craft professional, personalized messages to connect with alumni, recruiters, and mentors confidently. 
             No more awkward networking - just authentic, effective communication.
           </p>
+          
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+            <Button 
+              size="lg"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-3 text-lg font-medium"
+              onClick={() => setActiveStep(1)}
+            >
+              Start Creating Messages
+            </Button>
+            <Button 
+              variant="outline"
+              size="lg"
+              className="border-white/30 text-white hover:bg-white/10 px-8 py-3 text-lg font-medium bg-transparent"
+            >
+              View Examples
+            </Button>
+          </div>
+
+          {/* Feature Highlights */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12">
+            <div className="flex flex-col items-center space-y-3">
+              <MessageCircle className="h-12 w-12 text-white/70" />
+              <h3 className="text-lg font-semibold">Multiple Templates</h3>
+              <p className="text-sm opacity-80">LinkedIn, email, and mentorship messages</p>
+            </div>
+            <div className="flex flex-col items-center space-y-3">
+              <Users className="h-12 w-12 text-white/70" />
+              <h3 className="text-lg font-semibold">Professional Tone</h3>
+              <p className="text-sm opacity-80">Crafted by networking experts</p>
+            </div>
+            <div className="flex flex-col items-center space-y-3">
+              <Mail className="h-12 w-12 text-white/70" />
+              <h3 className="text-lg font-semibold">Instant Results</h3>
+              <p className="text-sm opacity-80">Generate messages in seconds</p>
+            </div>
+          </div>
         </div>
       </div>
 
