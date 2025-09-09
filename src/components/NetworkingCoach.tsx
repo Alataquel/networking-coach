@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Copy, Check, MessageCircle, Users, Mail, ArrowRight, Lightbulb } from "lucide-react";
+import { Copy, Check, MessageCircle, Users, Mail, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type MessageType = "linkedin" | "informational" | "recruiter-followup" | "mentor-request";
@@ -47,17 +47,6 @@ const messageTemplates = {
       `Subject: Mentorship Opportunity\n\nDear ${data.recipientName},\n\nI hope you're doing well. I'm a student and came across your profile. I was inspired by your career achievements at ${data.company}.\n\n${data.purpose}\n\nI'm writing to inquire about the possibility of a mentoring relationship. I'm passionate about growing in this field and would greatly value guidance from someone with your experience and expertise.\n\nI understand that mentoring is a significant commitment, and I want to assure you that I would:\n\n• Come prepared to our conversations with specific questions\n• Respect your time and schedule\n• Take action on the advice you provide\n• Keep you updated on my progress\n\nWould you be open to a brief conversation to discuss this possibility? I'm happy to accommodate your schedule and preferred communication method.\n\nThank you for considering this request.\n\nRespectfully`
   }
 };
-
-const conversationStarters = [
-  "I noticed you transitioned from [previous role] to [current role]. What motivated that change?",
-  "What's the most rewarding aspect of working at [company]?",
-  "What skills do you think are most important for someone entering this field?",
-  "How do you stay current with industry trends and developments?",
-  "What would you do differently if you were starting your career today?",
-  "Can you tell me about a typical day in your role?",
-  "What's the biggest challenge facing your industry right now?",
-  "How did you build your network when you were starting out?"
-];
 
 export default function NetworkingCoach() {
   const [messageData, setMessageData] = useState<MessageData>({
@@ -143,8 +132,8 @@ export default function NetworkingCoach() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-8">
-          {/* Message Type Selection */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Message Type Selection - Extended */}
           <Card className="lg:col-span-1 shadow-soft border-0 h-fit">
             <CardHeader className="pb-6">
               <CardTitle className="text-xl flex items-center gap-2">
@@ -152,10 +141,10 @@ export default function NetworkingCoach() {
                 Choose Message Type
               </CardTitle>
               <CardDescription className="text-base">
-                Select the type of message you want to send
+                Select the type of message you want to send. Each template is professionally crafted for different networking scenarios.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               {Object.entries(messageTemplates).map(([key, template]) => {
                 const TemplateIcon = template.icon;
                 const isSelected = messageData.messageType === key;
@@ -163,7 +152,7 @@ export default function NetworkingCoach() {
                   <Button
                     key={key}
                     variant={isSelected ? "default" : "outline"}
-                    className={`w-full p-4 h-auto transition-all text-left ${
+                    className={`w-full p-4 h-auto transition-all ${
                       isSelected
                         ? 'bg-primary text-primary-foreground shadow-professional border-primary' 
                         : 'hover:bg-trust hover:text-trust-foreground hover:border-accent border-border'
@@ -173,12 +162,12 @@ export default function NetworkingCoach() {
                       setActiveStep(Math.max(activeStep, 1));
                     }}
                   >
-                    <div className="flex flex-col w-full">
-                      <div className="flex items-center gap-2 mb-1">
-                        <TemplateIcon className="h-4 w-4 flex-shrink-0" />
+                    <div className="flex items-start gap-3 w-full text-left">
+                      <TemplateIcon className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                      <div className="flex flex-col min-w-0 flex-1">
                         <span className="font-medium text-sm leading-tight">{template.title}</span>
+                        <span className="text-xs opacity-80 mt-1">{template.description}</span>
                       </div>
-                      <span className="text-xs opacity-80 text-left">{template.description}</span>
                     </div>
                   </Button>
                 );
@@ -186,7 +175,7 @@ export default function NetworkingCoach() {
             </CardContent>
           </Card>
 
-          {/* Input Form */}
+          {/* Input Form - Extended */}
           <Card className="lg:col-span-2 shadow-soft border-0">
             <CardHeader className="pb-6">
               <CardTitle className="text-xl flex items-center gap-2">
@@ -194,11 +183,11 @@ export default function NetworkingCoach() {
                 {currentTemplate.title} Details
               </CardTitle>
               <CardDescription className="text-base">
-                Fill in the information to generate your personalized message
+                Fill in the information to generate your personalized message. The more specific you are, the better your message will be.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="recipientName" className="text-sm font-medium">Recipient's Name *</Label>
                   <Input
@@ -209,7 +198,7 @@ export default function NetworkingCoach() {
                       if (e.target.value && activeStep < 2) setActiveStep(2);
                     }}
                     placeholder="e.g., Sarah Johnson"
-                    className="h-11"
+                    className="h-12"
                   />
                 </div>
                 <div className="space-y-2">
@@ -219,7 +208,7 @@ export default function NetworkingCoach() {
                     value={messageData.recipientTitle}
                     onChange={(e) => setMessageData(prev => ({...prev, recipientTitle: e.target.value}))}
                     placeholder="e.g., Software Engineer"
-                    className="h-11"
+                    className="h-12"
                   />
                 </div>
               </div>
@@ -231,7 +220,7 @@ export default function NetworkingCoach() {
                   value={messageData.company}
                   onChange={(e) => setMessageData(prev => ({...prev, company: e.target.value}))}
                   placeholder="e.g., Microsoft"
-                  className="h-11"
+                  className="h-12"
                 />
               </div>
 
@@ -241,10 +230,13 @@ export default function NetworkingCoach() {
                   id="purpose"
                   value={messageData.purpose}
                   onChange={(e) => setMessageData(prev => ({...prev, purpose: e.target.value}))}
-                  placeholder="Why are you reaching out? What specific interest or connection do you have with this person or company?"
-                  rows={4}
+                  placeholder="Why are you reaching out? What specific interest or connection do you have with this person or company? Be specific about your goals and what you hope to learn."
+                  rows={6}
                   className="resize-none"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Tip: Mention specific projects, interests, or connections that make this outreach relevant and personal.
+                </p>
               </div>
 
               <Button 
@@ -257,58 +249,37 @@ export default function NetworkingCoach() {
               </Button>
             </CardContent>
           </Card>
-
-          {/* Generated Message & Tips */}
-          <div className="lg:col-span-1 space-y-6">
-            {generatedMessage && (
-              <Card className="shadow-soft border-0">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">Your Message</CardTitle>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCopy}
-                      className="gap-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-                    >
-                      {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                      {copied ? "Copied!" : "Copy"}
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-trust p-4 rounded-lg border border-trust-foreground/10">
-                    <pre className="whitespace-pre-wrap text-sm text-trust-foreground font-mono leading-relaxed">
-                      {generatedMessage}
-                    </pre>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Conversation Starters */}
-            <Card className="shadow-soft border-0">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5 text-accent" />
-                  Conversation Starters
-                </CardTitle>
-                <CardDescription>
-                  Great questions for informational interviews
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {conversationStarters.slice(0, 6).map((starter, index) => (
-                    <div key={index} className="text-sm text-muted-foreground border-l-2 border-accent/30 pl-3 py-1">
-                      {starter}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
+
+        {/* Generated Message - Full Width */}
+        {generatedMessage && (
+          <Card className="shadow-soft border-0 mt-8">
+            <CardHeader className="pb-6">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl">Your Generated Message</CardTitle>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={handleCopy}
+                  className="gap-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                >
+                  {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
+                  {copied ? "Copied!" : "Copy Message"}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-trust p-8 rounded-lg border border-trust-foreground/10">
+                <pre className="whitespace-pre-wrap text-base text-trust-foreground font-mono leading-relaxed">
+                  {generatedMessage}
+                </pre>
+              </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                💡 Review and personalize this message before sending. Add specific details that show you've researched the person and company.
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
