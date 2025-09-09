@@ -87,7 +87,17 @@ export default function NetworkingCoach() {
       {/* Header Section with Background */}
       <div className="bg-primary text-primary-foreground py-20 px-4">
         <div className="max-w-7xl mx-auto text-center space-y-6">
-          <h1 className="text-5xl font-bold">Networking coach</h1>
+          <h1 className="text-5xl font-bold">
+            Networking{" "}
+            <span 
+              className="bg-gradient-coach bg-clip-text text-transparent font-extrabold"
+              style={{
+                backgroundImage: 'var(--gradient-coach)'
+              }}
+            >
+              coach
+            </span>
+          </h1>
           <p className="text-xl max-w-3xl mx-auto leading-relaxed opacity-90">
             Craft professional, personalized messages to connect with alumni, recruiters, and mentors confidently. 
             No more awkward networking - just authentic, effective communication.
