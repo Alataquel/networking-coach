@@ -83,16 +83,20 @@ export default function NetworkingCoach() {
   const currentTemplate = messageTemplates[messageData.messageType];
 
   return (
-    <div className="min-h-screen bg-gradient-subtle py-12 px-4">
-      <div className="max-w-7xl mx-auto space-y-10">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-5xl font-bold text-foreground">Networking Coach</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+    <div className="min-h-screen bg-gradient-subtle">
+      {/* Header Section with Background */}
+      <div className="bg-primary text-primary-foreground py-20 px-4">
+        <div className="max-w-7xl mx-auto text-center space-y-6">
+          <h1 className="text-5xl font-bold">Networking coach</h1>
+          <p className="text-xl max-w-3xl mx-auto leading-relaxed opacity-90">
             Craft professional, personalized messages to connect with alumni, recruiters, and mentors confidently. 
             No more awkward networking - just authentic, effective communication.
           </p>
         </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto py-12 px-4 space-y-10">
 
         {/* Progress Steps */}
         <div className="flex justify-center mb-12">
