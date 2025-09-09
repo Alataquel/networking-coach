@@ -104,20 +104,13 @@ export default function NetworkingCoach() {
           </p>
           
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+          <div className="flex justify-center pt-4">
             <Button 
               size="lg"
               className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-3 text-lg font-medium"
               onClick={() => setActiveStep(1)}
             >
               Start Creating Messages
-            </Button>
-            <Button 
-              variant="outline"
-              size="lg"
-              className="border-white/30 text-white hover:bg-white/10 px-8 py-3 text-lg font-medium bg-transparent"
-            >
-              View Examples
             </Button>
           </div>
 
