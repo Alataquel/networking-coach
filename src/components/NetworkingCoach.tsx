@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Copy, Check, MessageCircle, Users, Mail, ArrowRight } from "lucide-react";
+import { Copy, Check, MessageCircle, Users, Mail, ArrowRight, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 type MessageType = "linkedin" | "informational" | "recruiter-followup" | "mentor-request";
 
@@ -60,13 +61,48 @@ export default function NetworkingCoach() {
   const [generatedMessage, setGeneratedMessage] = useState("");
   const [copied, setCopied] = useState(false);
   const [activeStep, setActiveStep] = useState(1);
+  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  const handleGenerate = () => {
-    const template = messageTemplates[messageData.messageType];
-    const message = template.template(messageData);
-    setGeneratedMessage(message);
-    setActiveStep(3);
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-networking-message', {
+        body: {
+          messageType: messageData.messageType,
+          recipientName: messageData.recipientName,
+          recipientTitle: messageData.recipientTitle,
+          company: messageData.company,
+          purpose: messageData.purpose
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to generate message');
+      }
+
+      setGeneratedMessage(data.message);
+      setActiveStep(3);
+      
+      toast({
+        title: "AI Message Generated!",
+        description: "Your personalized networking message has been created.",
+      });
+    } catch (error) {
+      console.error('Error generating message:', error);
+      toast({
+        title: "Generation Failed",
+        description: "Failed to generate your message. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleCopy = () => {
@@ -99,8 +135,8 @@ export default function NetworkingCoach() {
             </span>
           </h1>
           <p className="text-xl max-w-3xl mx-auto leading-relaxed opacity-90">
-            Craft professional, personalized messages to connect with alumni, recruiters, and mentors confidently. 
-            No more awkward networking - just authentic, effective communication.
+            Generate professional, AI-powered networking messages that are personalized for each recipient. 
+            No more awkward networking - just authentic, effective communication powered by advanced AI.
           </p>
           
           {/* Action Buttons */}
@@ -117,19 +153,19 @@ export default function NetworkingCoach() {
           {/* Feature Highlights */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12">
             <div className="flex flex-col items-center space-y-3">
-              <MessageCircle className="h-12 w-12 text-white/70" />
-              <h3 className="text-lg font-semibold">Multiple Templates</h3>
-              <p className="text-sm opacity-80">LinkedIn, email, and mentorship messages</p>
+              <Sparkles className="h-12 w-12 text-white/70" />
+              <h3 className="text-lg font-semibold">AI-Powered</h3>
+              <p className="text-sm opacity-80">Personalized messages using advanced AI</p>
             </div>
             <div className="flex flex-col items-center space-y-3">
               <Users className="h-12 w-12 text-white/70" />
               <h3 className="text-lg font-semibold">Professional Tone</h3>
-              <p className="text-sm opacity-80">Crafted by networking experts</p>
+              <p className="text-sm opacity-80">Context-aware and industry-appropriate</p>
             </div>
             <div className="flex flex-col items-center space-y-3">
               <Mail className="h-12 w-12 text-white/70" />
-              <h3 className="text-lg font-semibold">Instant Results</h3>
-              <p className="text-sm opacity-80">Generate messages in seconds</p>
+              <h3 className="text-lg font-semibold">Multiple Formats</h3>
+              <p className="text-sm opacity-80">LinkedIn, email, and mentorship messages</p>
             </div>
           </div>
         </div>
@@ -185,7 +221,7 @@ export default function NetworkingCoach() {
                 Choose Message Type
               </CardTitle>
               <CardDescription className="text-base">
-                Select the type of message you want to send. Each template is professionally crafted for different networking scenarios.
+                Select the type of networking message you want to create. AI will generate personalized content based on your selection.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -227,7 +263,7 @@ export default function NetworkingCoach() {
                 {currentTemplate.title} Details
               </CardTitle>
               <CardDescription className="text-base">
-                Fill in the information to generate your personalized message. The more specific you are, the better your message will be.
+                Provide information about the recipient and your networking goals. AI will create a personalized message using these details.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -269,27 +305,37 @@ export default function NetworkingCoach() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="purpose" className="text-sm font-medium">Purpose/Context</Label>
+                <Label htmlFor="purpose" className="text-sm font-medium">Purpose/Context (Recommended)</Label>
                 <Textarea
                   id="purpose"
                   value={messageData.purpose}
                   onChange={(e) => setMessageData(prev => ({...prev, purpose: e.target.value}))}
-                  placeholder="Why are you reaching out? What specific interest or connection do you have with this person or company? Be specific about your goals and what you hope to learn."
+                  placeholder="Why are you reaching out? What specific interest or connection do you have? What are your goals? The more context you provide, the better the AI can personalize your message."
                   rows={6}
                   className="resize-none"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Tip: Mention specific projects, interests, or connections that make this outreach relevant and personal.
+                  💡 Tip: Include specific projects, shared connections, or reasons why you're interested in connecting with them. This helps AI create more authentic and engaging messages.
                 </p>
               </div>
 
               <Button 
                 onClick={handleGenerate} 
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-professional h-12 text-base font-medium"
-                disabled={!isFormValid}
+                disabled={!isFormValid || isGenerating}
               >
-                Generate Message
-                <ArrowRight className="ml-2 h-4 w-4" />
+                {isGenerating ? (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4 animate-spin" />
+                    Generating with AI...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate AI Message
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             </CardContent>
           </Card>
@@ -300,7 +346,10 @@ export default function NetworkingCoach() {
           <Card className="shadow-soft border-0 mt-8">
             <CardHeader className="pb-6">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl">Your Generated Message</CardTitle>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                  Your AI-Generated Message
+                </CardTitle>
                 <Button
                   variant="outline"
                   size="lg"
@@ -319,7 +368,7 @@ export default function NetworkingCoach() {
                 </pre>
               </div>
               <p className="text-sm text-muted-foreground mt-4">
-                💡 Review and personalize this message before sending. Add specific details that show you've researched the person and company.
+                🤖 This message was generated by AI based on your inputs. Feel free to personalize it further before sending to make it even more authentic and aligned with your communication style.
               </p>
             </CardContent>
           </Card>

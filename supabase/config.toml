@@ -1,1 +1,4 @@
 project_id = "ajwkvmysvtjiqhbxdpxv"
+
+[functions.generate-networking-message]
+verify_jwt = false
