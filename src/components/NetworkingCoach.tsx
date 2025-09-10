@@ -4,8 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Copy, Check, MessageCircle, Users, Mail, ArrowRight } from "lucide-react";
+import { Copy, Check, MessageCircle, Users, Mail, ArrowRight, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import AuthPage from "./AuthPage";
+import MessageHistory from "./MessageHistory";
+import type { Session } from "@supabase/supabase-js";
 
 type MessageType = "linkedin" | "informational" | "recruiter-followup" | "mentor-request";
 
@@ -49,6 +54,7 @@ const messageTemplates = {
 };
 
 export default function NetworkingCoach() {
+  const { user, session, loading, signOut } = useAuth();
   const [messageData, setMessageData] = useState<MessageData>({
     recipientName: "",
     recipientTitle: "",
@@ -60,24 +66,96 @@ export default function NetworkingCoach() {
   const [generatedMessage, setGeneratedMessage] = useState("");
   const [copied, setCopied] = useState(false);
   const [activeStep, setActiveStep] = useState(1);
+  const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     const template = messageTemplates[messageData.messageType];
     const message = template.template(messageData);
     setGeneratedMessage(message);
     setActiveStep(3);
+
+    // Save to database if user is authenticated
+    if (user) {
+      setSaving(true);
+      try {
+        const { data, error } = await supabase.from('networking_messages').insert({
+          user_id: user.id,
+          message_type: messageData.messageType,
+          recipient_name: messageData.recipientName,
+          recipient_title: messageData.recipientTitle || null,
+          company: messageData.company,
+          purpose: messageData.purpose || null,
+          generated_message: message
+        }).select().single();
+
+        if (error) throw error;
+
+        // Track analytics
+        await supabase.from('message_analytics').insert({
+          user_id: user.id,
+          message_id: data.id,
+          action_type: 'generated'
+        });
+
+        toast({
+          title: "Message saved!",
+          description: "Your message has been saved to your history.",
+        });
+      } catch (error) {
+        console.error('Failed to save message:', error);
+        toast({
+          title: "Message generated",
+          description: "Message created but couldn't be saved to history.",
+          variant: "destructive",
+        });
+      } finally {
+        setSaving(false);
+      }
+    }
   };
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     navigator.clipboard.writeText(generatedMessage);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    
+    // Track analytics if user is authenticated
+    if (user) {
+      try {
+        await supabase.from('message_analytics').insert({
+          user_id: user.id,
+          action_type: 'copied'
+        });
+      } catch (error) {
+        console.error('Failed to track copy action:', error);
+      }
+    }
+    
     toast({
       title: "Message copied!",
       description: "Your message has been copied to clipboard.",
     });
   };
+
+  const handleAuthSuccess = (session: Session) => {
+    // Auth success is handled by the AuthProvider
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage onAuthSuccess={handleAuthSuccess} />;
+  }
 
   const isFormValid = messageData.recipientName && messageData.company;
   const currentTemplate = messageTemplates[messageData.messageType];
@@ -104,13 +182,22 @@ export default function NetworkingCoach() {
           </p>
           
           {/* Action Buttons */}
-          <div className="flex justify-center pt-4">
+          <div className="flex justify-center gap-4 pt-4">
             <Button 
               size="lg"
               className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-3 text-lg font-medium"
               onClick={() => setActiveStep(1)}
             >
               Start Creating Messages
+            </Button>
+            <Button 
+              variant="outline"
+              size="lg"
+              onClick={signOut}
+              className="bg-white/5 hover:bg-white/10 text-white border border-white/20 px-6 py-3"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
             </Button>
           </div>
 
@@ -286,9 +373,9 @@ export default function NetworkingCoach() {
               <Button 
                 onClick={handleGenerate} 
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-professional h-12 text-base font-medium"
-                disabled={!isFormValid}
+                disabled={!isFormValid || saving}
               >
-                Generate Message
+                {saving ? "Saving..." : "Generate Message"}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
@@ -324,6 +411,9 @@ export default function NetworkingCoach() {
             </CardContent>
           </Card>
         )}
+
+        {/* Message History */}
+        <MessageHistory />
       </div>
     </div>
   );
