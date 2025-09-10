@@ -83,13 +83,24 @@ Generate ONLY the message content, no additional explanations or formatting.`;
     }
 
     const data = await response.json();
-    console.log('OpenAI response received successfully');
+    console.log('OpenAI full response:', JSON.stringify(data, null, 2));
     
-    const generatedMessage = data.choices[0].message.content.trim();
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Unexpected OpenAI response structure:', data);
+      throw new Error('Invalid response structure from OpenAI');
+    }
+    
+    const generatedMessage = data.choices[0].message.content;
+    console.log('Extracted message:', generatedMessage);
+    
+    if (!generatedMessage || generatedMessage.trim() === '') {
+      console.error('Empty message generated');
+      throw new Error('OpenAI returned an empty message');
+    }
 
     return new Response(JSON.stringify({ 
       success: true,
-      message: generatedMessage 
+      message: generatedMessage.trim()
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
