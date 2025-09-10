@@ -67,12 +67,13 @@ Generate ONLY the message content, no additional explanations or formatting.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-2025-08-07',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompts[messageType as keyof typeof systemPrompts] },
           { role: 'user', content: userPrompt }
         ],
-        max_completion_tokens: 500,
+        max_tokens: 500,
+        temperature: 0.7,
       }),
     });
 
